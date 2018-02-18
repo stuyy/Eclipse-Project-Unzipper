@@ -24,11 +24,24 @@ cd_src()
 }
 run_FILE()
 {
+
   echo "Enter the name of the package"
   read PACKAGE
-  echo "Enter the name of the file"
-  read FILE
-  java "$PACKAGE.$FILE"
+  
+  if [[ -z "${PACKAGE// }" ]]; # If no package is specified, then prompt the user for the name of the file.
+  then
+
+    echo "Enter the name of the file"
+    read FILE
+    java $FILE
+
+  else
+    echo "Enter the name of the file"
+    read FILE
+    java "$PACKAGE.$FILE"
+
+  fi
+
   echo "Continue? y/n"
   read CHOICE
   if [[ "$CHOICE" = "y" || "$CHOICE" = "Y" ]];
@@ -45,11 +58,9 @@ then
   unzip_FILE # Unzip the file.
   compile_FILE # Compile the java files in the project folder.
   #After compiling, go into the src folder.
-
   cd_src # At this point everything has been compiled. We just need to run the file.
   # I want the user to enter the name of the file they're compiling.
   run_FILE
-  
 fi
 cd -
 rm -r */
