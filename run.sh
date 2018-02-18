@@ -7,6 +7,7 @@ unzip_FILE()
   echo "Extraction Successful... [$(date)]" 1>>log_output.txt
   return
 }
+
 compile_FILE()
 {
   javac $(find */ -name "*.java")
@@ -48,18 +49,29 @@ run_FILE()
 
 EXECUTE_FILE()
 {
-
   echo "Enter the full name of the package"
   read PACKAGE
-  java "$PACKAGE.$(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$lineCounter p" | cut -f 1 -d '.')" # Run the file.
+  LIST_FILES
+  java "$PACKAGE.$(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$lineCounter p" | cut -f 1 -d '.')" >> output.txt # Run the file.
   lineCounter=$(($lineCounter+1))
+  
   return # Return.
 }
 
-find_MAIN()
+LIST_FILES()
 {
-  grep -l 'void main' $(find */ -name "*.java") -l | xargs -L 1 basename | sed -n '1 p'
+  FILE_COUNT=$(grep -l 'void main' $(find */ -name "*.java") | wc -l)
+  echo "List of files"
+  while [[ "$COUNT" < "$FILE_COUNT" ]];
+  do
+    echo "Etf"
+    echo $(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$COUNT p" | cut -f 1 -d '.')
+    COUNT=$(($COUNT+1))
+  done
+  return
 }
+
+
 echo "Welcome to Anson's Java Compiling Script. Please enter an existing file to extract"
 read FILE
 if [ -e "$FILE" ]; # If the file exists, we want to unzip it.
@@ -67,10 +79,8 @@ then
   unzip_FILE # Unzip the file.
   compile_FILE # Compile the java files in the project folder.
   #After compiling, go into the src folder.
-  find_MAIN
   cd_src # At this point everything has been compiled. We just need to run the file.
   run_FILE
-
 fi
 cd -
 rm -r */
