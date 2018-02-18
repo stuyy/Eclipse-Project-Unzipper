@@ -18,6 +18,7 @@ compile_FILE()
 cd_src()
 {
   cd */src
+  pwd
   echo "Here"
   return
 }
@@ -49,27 +50,16 @@ run_FILE()
 
 EXECUTE_FILE()
 {
+  pwd
   echo "Enter the full name of the package"
   read PACKAGE
-  LIST_FILES
-  java "$PACKAGE.$(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$lineCounter p" | cut -f 1 -d '.')" >> output.txt # Run the file.
+  echo $PACKAGE
+  java "$PACKAGE.$(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$lineCounter p" | cut -f 1 -d '.')" # Run the file.
   lineCounter=$(($lineCounter+1))
-  
   return # Return.
 }
 
-LIST_FILES()
-{
-  FILE_COUNT=$(grep -l 'void main' $(find */ -name "*.java") | wc -l)
-  echo "List of files"
-  while [[ "$COUNT" < "$FILE_COUNT" ]];
-  do
-    echo "Etf"
-    echo $(grep -l 'void main' $(find */ -name "*.java") | xargs -L 1 basename | sed -n "$COUNT p" | cut -f 1 -d '.')
-    COUNT=$(($COUNT+1))
-  done
-  return
-}
+
 
 
 echo "Welcome to Anson's Java Compiling Script. Please enter an existing file to extract"
