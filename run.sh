@@ -1,10 +1,19 @@
 #!/bin/sh
 COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)End")
 lineCounter=1
-unzip_FILE()
+unzip_FILE() # Call this function if the user specifies arguments in the beginning.
 {
-  unzip $FILE
+  
+  unzip $2
   echo "Extraction Successful... [$(date)]" 1>>log_output.txt
+  mv */ $1
+  return
+}
+
+unzip_FILE_TWO() # Call this function if the user does not specify any arguments.
+{ 
+  unzip $FILE
+  mv */ $NAME
   return
 }
 
@@ -89,18 +98,50 @@ userCHOICE()
   fi
 
 }
-echo "Welcome to Anson's Java Compiling Script. Please enter an existing file to extract"
-read FILE
-if [ -e "$FILE" ]; # If the file exists, we want to unzip it.
+# Everything here is global.
+# Beginning of the file.
+if [[ "$#" > 1 ]]; # It's greater than 0 if they enter in more than one argument. They entered a name.
 then
-  unzip_FILE # Unzip the file.
-  compile_FILE # Compile the java files in the project folder.
-  #After compiling, some project files may have spaces in their name, we need to fix this. We can either remove the space, or just rename it to a constant name.
-  mv */ TEST #Change the name of the directory to TEST.
-  cd_src # Change the directory into the source folder.
-  userCHOICE
-  #run_FILE2
+# The first argument is a name.
+echo $1 #Name
+echo $2 #File name
+
+unzip_FILE $1 $2
+
+elif [[ "$#" = 0 ]];
+then
+
+  echo "Welcome to Anson's Java Executable Script. Please enter an existing file to extract"
+  read FILE
+  echo "Enter name"
+  read NAME
+
+  if [ -e "$FILE" ]; # If the file exists, we want to unzip it.
+  then
+    unzip_FILE_TWO $FILE $NAME # Unzip the file.
+    compile_FILE # Compile the java files in the project folder.
+    #After compiling, some project files may have spaces in their name, we need to fix this. We can either remove the space, or just rename it to a constant name.
+  
+    cd_src # Change the directory into the source folder.
+    userCHOICE
+    #run_FILE2
+    cd -
+    rm -r */ 
+  else
+  echo "Usage: [name] [FILE]"
+  echo "name: Specify a name for the folder for the file to be extracted to."
+  echo "name must not have any spaces and should only be one word"
 fi
-cd -
-rm -r */
+
+elif [[ "$#" = 1 ]];
+then
+  echo "Usage: [name] [FILE]"
+  echo "name: Specify a name for the folder for the file to be extracted to."
+  echo "name must not have any spaces and should only be one word"
+fi
+
 #java $(grep -l 'void main' $(find . -name "*.java") | cut -f 2 -d '.')
+
+
+#user_id
+#password
