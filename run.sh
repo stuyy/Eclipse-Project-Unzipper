@@ -1,9 +1,9 @@
 #!/bin/sh
-COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)End")
+COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)View Output\n" "(4)End")
 
 unzip_FILE() # Call this function if the user specifies arguments in the beginning.
 {
-  unzip $2
+  unzip $2 >> log_output.txt
   echo "Extraction Successful... [$(date)]" 1>>log_output.txt
   mv */ $1
   return
@@ -23,7 +23,7 @@ compile_FILE()
   return
 }
 
-cd_src()
+cd_src() # cd to the source folder.
 {
   cd */src
   return
@@ -38,7 +38,9 @@ run_FILE()
   PACKAGE=$(grep 'package' "$(find . -name "$FILE.java")" -m 1 | awk '{print $2}' | tr -d ';' | tr -d '\r')
   COMPILE=$PACKAGE.$FILE
   #echo $COMPILE
-  java $COMPILE
+  echo "Running $FILE.java\n" >> fileOutput.txt
+  java $COMPILE >> fileOutput.txt
+  echo "\n" >> fileOutput.txt
   return
 }
 
@@ -64,6 +66,20 @@ userCHOICE()
 
   elif [[ "$CHOICE" = 3 ]];
   then
+
+    outputFile=$(find . -name "fileOutput.txt")
+    if [ -e "$outputFile" ];
+    then
+      cat $outputFile
+      userCHOICE
+
+    else
+      echo "File not found"
+      userCHOICE
+    fi
+
+  elif [[ "$CHOICE" = 4 ]];
+  then
     return
   fi
 
@@ -76,7 +92,11 @@ then
   if [ -e "$2" ];
   then
     unzip_FILE $1 $2
-
+    compile_FILE
+    cd_src
+    userCHOICE
+    cd -
+    rm -r */
   else
   echo "File not found."
   echo "Usage: [NAME] [FILE]"
@@ -97,7 +117,7 @@ then
     unzip_FILE_TWO $FILE $NAME # Unzip the file.
     compile_FILE # Compile the java files in the project folder.
     #After compiling, some project files may have spaces in their name, we need to fix this. We can either remove the space, or just rename it to a constant name.
-    
+
     cd_src # Change the directory into the source folder.
     userCHOICE
     #run_FILE2
