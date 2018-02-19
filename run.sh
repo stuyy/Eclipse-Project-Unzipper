@@ -1,9 +1,8 @@
 #!/bin/sh
 COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)End")
-lineCounter=1
+
 unzip_FILE() # Call this function if the user specifies arguments in the beginning.
 {
-  
   unzip $2
   echo "Extraction Successful... [$(date)]" 1>>log_output.txt
   mv */ $1
@@ -31,35 +30,6 @@ cd_src()
 }
 
 run_FILE()
-{
-
-  echo "Enter the name of the package"
-  read PACKAGE
-
-  if [[ -z "${PACKAGE// }" ]]; # If no package is specified, then prompt the user for the name of the file.
-  then
-
-    echo "Enter the name of the file"
-    read FILE
-    java $FILE
-
-  else
-    echo "Enter the name of the file"
-    read FILE
-    java "$PACKAGE.$FILE"
-  fi
-
-  echo "Continue? y/n"
-  read CHOICE
-  if [[ "$CHOICE" = "y" || "$CHOICE" = "Y" ]];
-  then
-    run_FILE
-  fi
-  return
-}
-
-
-run_FILE2()
 {
   echo "Enter the name of the executable java file WITHOUT the .java extension"
   read FILE
@@ -89,7 +59,7 @@ userCHOICE()
 
   elif [[ "$CHOICE" = 2 ]];
   then
-    run_FILE2
+    run_FILE
     userCHOICE
 
   elif [[ "$CHOICE" = 3 ]];
@@ -103,10 +73,16 @@ userCHOICE()
 if [[ "$#" > 1 ]]; # It's greater than 0 if they enter in more than one argument. They entered a name.
 then
 # The first argument is a name.
-echo $1 #Name
-echo $2 #File name
+  if [ -e "$2" ];
+  then
+    unzip_FILE $1 $2
 
-unzip_FILE $1 $2
+  else
+  echo "File not found."
+  echo "Usage: [NAME] [FILE]"
+  echo "name: Specify a name for the folder for the file to be extracted to."
+  echo "name must not have any spaces and should only be one word."
+  fi
 
 elif [[ "$#" = 0 ]];
 then
@@ -121,25 +97,25 @@ then
     unzip_FILE_TWO $FILE $NAME # Unzip the file.
     compile_FILE # Compile the java files in the project folder.
     #After compiling, some project files may have spaces in their name, we need to fix this. We can either remove the space, or just rename it to a constant name.
-  
+    
     cd_src # Change the directory into the source folder.
     userCHOICE
     #run_FILE2
     cd -
     rm -r */ 
   else
-  echo "Usage: [name] [FILE]"
+  echo "Usage: [NAME] [FILE]"
   echo "name: Specify a name for the folder for the file to be extracted to."
-  echo "name must not have any spaces and should only be one word"
+  echo "name must not have any spaces and should only be one word."
 fi
 
 elif [[ "$#" = 1 ]];
 then
-  echo "Usage: [name] [FILE]"
+  echo "Usage: [NAME] [FILE]"
   echo "name: Specify a name for the folder for the file to be extracted to."
   echo "name must not have any spaces and should only be one word"
-fi
-
+fi # End of if statement.
+ 
 #java $(grep -l 'void main' $(find . -name "*.java") | cut -f 2 -d '.')
 
 
