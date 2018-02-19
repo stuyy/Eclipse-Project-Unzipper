@@ -135,9 +135,3 @@ then
   echo "name: Specify a name for the folder for the file to be extracted to."
   echo "name must not have any spaces and should only be one word"
 fi # End of if statement.
- 
-#java $(grep -l 'void main' $(find . -name "*.java") | cut -f 2 -d '.')
-
-
-#user_id
-#password
