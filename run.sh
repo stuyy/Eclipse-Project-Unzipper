@@ -1,4 +1,5 @@
 #!/bin/sh
+COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)End")
 lineCounter=1
 unzip_FILE()
 {
@@ -19,6 +20,7 @@ cd_src()
   cd */src
   return
 }
+
 run_FILE()
 {
 
@@ -47,6 +49,7 @@ run_FILE()
   return
 }
 
+
 run_FILE2()
 {
   echo "Enter the name of the executable java file WITHOUT the .java extension"
@@ -55,20 +58,37 @@ run_FILE2()
   # Find the package.
   PACKAGE=$(grep 'package' "$(find . -name "$FILE.java")" -m 1 | awk '{print $2}' | tr -d ';' | tr -d '\r')
   COMPILE=$PACKAGE.$FILE
-  echo $COMPILE
+  #echo $COMPILE
   java $COMPILE
-  
+  return
 }
 
 # Start of the program
 # There are a set of things this program MUST do, however I want to add flexible commands for the user.
 # The user may want to get a list of packages, or the list of files that are executable.
-# 
-# 
-#
-#
-#
 
+userCHOICE()
+{
+  echo "What do you want to do?"
+  echo "${COMMANDS[*]}"
+  read CHOICE
+  if [[ "$CHOICE" = 1 ]]; # If they enter 1, list all of the files that have a main method
+  then
+   targets=$(grep -l 'void main' $(find . -name "*.java") |  xargs -L 1 basename)
+   echo $targets
+   userCHOICE
+
+  elif [[ "$CHOICE" = 2 ]];
+  then
+    run_FILE2
+    userCHOICE
+
+  elif [[ "$CHOICE" = 3 ]];
+  then
+    return
+  fi
+
+}
 echo "Welcome to Anson's Java Compiling Script. Please enter an existing file to extract"
 read FILE
 if [ -e "$FILE" ]; # If the file exists, we want to unzip it.
@@ -78,7 +98,8 @@ then
   #After compiling, some project files may have spaces in their name, we need to fix this. We can either remove the space, or just rename it to a constant name.
   mv */ TEST #Change the name of the directory to TEST.
   cd_src # Change the directory into the source folder.
-  run_FILE2
+  userCHOICE
+  #run_FILE2
 fi
 cd -
 rm -r */
