@@ -1,4 +1,6 @@
 # Anson's Bash Script for Compiling Eclipse Java Projects
+![Image](https://fthmb.tqn.com/yOE1QoYZHEUhVkZuuxop_Ma9mQU=/768x0/filters:no_upscale()/Gnu-bash-logo.svg-58c6fe745f9b58af5c8d8017.png)
+
 Users can extract an exported Eclipse Project (.zip) via the Mac Terminal and compile and run the project. A list of executable files are listed when the user specifies an argument. This currently is still in the works of testing for Linux, but it should work on the Mac Terminal.
 # Getting Started
 Download the file `run.sh` from this repository. Open up your terminal. Download an Eclipse Project. The Eclipse Project MUST be exported properly or else issues may arise. If you use this for grading, then have your students properly export the Eclipse Project.
