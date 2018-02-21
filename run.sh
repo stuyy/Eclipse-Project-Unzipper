@@ -3,8 +3,13 @@ COMMANDS=(" (1)List Executable Files\n" "(2)Execute a File\n" "(3)View Output\n"
 
 unzip_FILE() # Call this function if the user specifies arguments in the beginning.
 {
+  MAC=__MACOSX
   unzip $2 >> log_output.txt
   echo "Extraction Successful... [$(date)]" 1>>log_output.txt
+  if [ -d $MAC ];
+  then
+  rm -r $MAC
+  fi
   mv */ $1
   return
 }
@@ -12,6 +17,7 @@ unzip_FILE() # Call this function if the user specifies arguments in the beginni
 unzip_FILE_TWO() # Call this function if the user does not specify any arguments.
 { 
   unzip $FILE
+  rm -r __MACOSX
   mv */ $NAME
   return
 }
@@ -32,14 +38,20 @@ cd_src() # cd to the source folder.
 run_FILE()
 {
   echo "Enter the name of the executable java file WITHOUT the .java extension"
-  read FILE
+  read ARG
+  pos=0
+  lineArguments=(${ARG// / })
+  FILE=${lineArguments[0]}
+  echo $FILE
+  lineArguments=(${lineArguments[@]:0:$pos} ${lineArguments[@]:$(($pos + 1))})
+  echo "${lineArguments[*]}"
   # I will check if the source code has a main method, but for now we will assume it does.
   # Find the package.
   PACKAGE=$(grep 'package' "$(find . -name "$FILE.java")" -m 1 | awk '{print $2}' | tr -d ';' | tr -d '\r')
   COMPILE=$PACKAGE.$FILE
   #echo $COMPILE
   echo "Running $FILE.java\n" >> fileOutput.txt
-  java $COMPILE >> fileOutput.txt
+  java $COMPILE "${lineArguments[*]}" >> fileOutput.txt
   echo "\n" >> fileOutput.txt
   return
 }
