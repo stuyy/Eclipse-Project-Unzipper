@@ -44,14 +44,21 @@ run_FILE()
   FILE=${lineArguments[0]}
   echo $FILE
   lineArguments=(${lineArguments[@]:0:$pos} ${lineArguments[@]:$(($pos + 1))})
-  echo "${lineArguments[*]}"
+  #echo "${lineArguments[*]}"
   # I will check if the source code has a main method, but for now we will assume it does.
   # Find the package.
   PACKAGE=$(grep 'package' "$(find . -name "$FILE.java")" -m 1 | awk '{print $2}' | tr -d ';' | tr -d '\r')
+  
   COMPILE=$PACKAGE.$FILE
   #echo $COMPILE
   echo "Running $FILE.java\n" >> fileOutput.txt
-  java $COMPILE "${lineArguments[*]}" >> fileOutput.txt
+  if [ ${#lineArguments[@]} -eq 0 ];
+  then
+    java $COMPILE >> fileOutput.txt
+  else
+    java $COMPILE "${lineArguments[*]}" >> fileOutput.txt
+  fi
+  
   echo "\n" >> fileOutput.txt
   return
 }
